@@ -107,7 +107,7 @@ export class TrivyAdapter extends BaseScannerAdapter {
     return code === 0;
   }
 
-  async parseResults(rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
+  async parseResults(_rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
     const findings: NormalizedFinding[] = [];
     const jsonPath = join(input.artifact_output_dir, 'trivy-results.json');
     let raw: TrivyResult;

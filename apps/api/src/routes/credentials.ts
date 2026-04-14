@@ -41,7 +41,7 @@ router.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const cred = await credentialService.getCredential(req.params.id);
+    const cred = await credentialService.getCredential(String(req.params.id));
     if (!cred) throw new AppError(404, 'Credential not found');
     res.json(cred);
   } catch (err) {
@@ -51,7 +51,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 
 router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await credentialService.deleteCredential(req.params.id);
+    await credentialService.deleteCredential(String(req.params.id));
     res.status(204).end();
   } catch (err) {
     next(err);

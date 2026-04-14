@@ -29,14 +29,14 @@ export async function createCredential(data: CreateCredentialRequest, actor: str
 
   // Never return the encrypted value
   const { encrypted_value, ...safe } = cred;
-  return safe as CredentialResponse;
+  return safe as unknown as CredentialResponse;
 }
 
 export async function getCredential(id: string): Promise<CredentialResponse | null> {
   const [cred] = await db.select().from(schema.credentialProfiles).where(eq(schema.credentialProfiles.id, id));
   if (!cred) return null;
   const { encrypted_value, ...safe } = cred;
-  return safe as CredentialResponse;
+  return safe as unknown as CredentialResponse;
 }
 
 export async function listCredentials(): Promise<CredentialResponse[]> {
@@ -49,7 +49,7 @@ export async function listCredentials(): Promise<CredentialResponse[]> {
     created_at: schema.credentialProfiles.created_at,
     updated_at: schema.credentialProfiles.updated_at,
   }).from(schema.credentialProfiles);
-  return creds as CredentialResponse[];
+  return creds as unknown as CredentialResponse[];
 }
 
 export async function deleteCredential(id: string): Promise<boolean> {

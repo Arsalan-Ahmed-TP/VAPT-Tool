@@ -94,7 +94,7 @@ export interface CreateScanRequest {
   enabled_scanners?: ScannerCategory[];
 }
 
-export interface ScanResponse extends ScanRequest {
+export interface ScanResponse extends Omit<ScanRequest, 'summary'> {
   target: ScanTarget;
   jobs: ScannerJob[];
   summary: ScanSummary | null;
@@ -185,7 +185,7 @@ export interface CreateValidationRequest {
   scanner_categories?: ScannerCategory[];
 }
 
-export interface ValidationResponse extends ValidationRun {
+export interface ValidationResponse extends Omit<ValidationRun, 'comparison'> {
   comparison: ValidationComparison | null;
 }
 

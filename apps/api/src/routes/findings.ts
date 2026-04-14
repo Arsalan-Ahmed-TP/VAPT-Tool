@@ -33,7 +33,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const finding = await findingsService.getFinding(req.params.id);
+    const finding = await findingsService.getFinding(String(req.params.id));
     if (!finding) throw new AppError(404, 'Finding not found');
     res.json(finding);
   } catch (err) {
@@ -43,7 +43,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/correlated/:scanId', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const groups = await findingsService.getCorrelatedGroups(req.params.scanId);
+    const groups = await findingsService.getCorrelatedGroups(String(req.params.scanId));
     res.json({ data: groups });
   } catch (err) {
     next(err);

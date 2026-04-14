@@ -48,7 +48,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const scan = await scanService.getScan(req.params.id);
+    const scan = await scanService.getScan(String(req.params.id));
     if (!scan) throw new AppError(404, 'Scan not found');
     res.json(scan);
   } catch (err) {
@@ -58,7 +58,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/:id/status', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const status = await scanService.getScanStatus(req.params.id);
+    const status = await scanService.getScanStatus(String(req.params.id));
     if (!status) throw new AppError(404, 'Scan not found');
     res.json(status);
   } catch (err) {
@@ -68,7 +68,7 @@ router.get('/:id/status', async (req: Request, res: Response, next: NextFunction
 
 router.post('/:id/cancel', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    await scanService.cancelScan(req.params.id, 'system');
+    await scanService.cancelScan(String(req.params.id), 'system');
     res.json({ message: 'Scan cancelled' });
   } catch (err) {
     next(err);

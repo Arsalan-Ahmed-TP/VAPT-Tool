@@ -2,7 +2,7 @@
 // Database schema — Drizzle ORM definitions for PostgreSQL
 // ---------------------------------------------------------------------------
 
-import { pgTable, text, timestamp, integer, boolean, jsonb, real, pgEnum, uuid, index } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, integer, boolean, jsonb, real, pgEnum, uuid } from 'drizzle-orm/pg-core';
 
 // ---------------------------------------------------------------------------
 // Enums
@@ -96,10 +96,7 @@ export const scanRequests = pgTable('scan_requests', {
   error: text('error'),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
-}, (table) => [
-  index('idx_scan_requests_target').on(table.target_id),
-  index('idx_scan_requests_status').on(table.status),
-]);
+});
 
 export const scannerJobs = pgTable('scanner_jobs', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -119,10 +116,7 @@ export const scannerJobs = pgTable('scanner_jobs', {
   max_retries: integer('max_retries').notNull().default(2),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
-}, (table) => [
-  index('idx_scanner_jobs_scan').on(table.scan_id),
-  index('idx_scanner_jobs_status').on(table.status),
-]);
+});
 
 export const normalizedFindings = pgTable('normalized_findings', {
   finding_id: uuid('finding_id').primaryKey().defaultRandom(),
@@ -161,12 +155,7 @@ export const normalizedFindings = pgTable('normalized_findings', {
   priority_score: real('priority_score').notNull().default(0),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
-}, (table) => [
-  index('idx_findings_scan').on(table.scan_id),
-  index('idx_findings_severity').on(table.severity),
-  index('idx_findings_category').on(table.category),
-  index('idx_findings_priority').on(table.priority_score),
-]);
+});
 
 export const correlatedGroups = pgTable('correlated_groups', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -263,8 +252,4 @@ export const auditEvents = pgTable('audit_events', {
   details: jsonb('details').$type<Record<string, unknown>>().default({}),
   ip_address: text('ip_address'),
   timestamp: timestamp('timestamp').defaultNow().notNull(),
-}, (table) => [
-  index('idx_audit_action').on(table.action),
-  index('idx_audit_target').on(table.target_type, table.target_id),
-  index('idx_audit_timestamp').on(table.timestamp),
-]);
+});

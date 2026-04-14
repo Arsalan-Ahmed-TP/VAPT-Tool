@@ -2,8 +2,8 @@
 // Patch applier — safely applies approved patches to source code
 // ---------------------------------------------------------------------------
 
-import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
+import { readFile, mkdir, copyFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 import type { RemediationStep } from './types.js';
 

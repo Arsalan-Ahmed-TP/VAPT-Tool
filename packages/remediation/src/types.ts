@@ -1,5 +1,3 @@
-import type { NormalizedFinding, Severity, ScannerCategory } from '@securescope/shared-types';
-
 export interface RemediationStep {
   finding_id: string;
   title: string;

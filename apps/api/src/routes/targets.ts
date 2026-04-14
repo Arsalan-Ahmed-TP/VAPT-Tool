@@ -48,7 +48,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
 
 router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const target = await targetService.getTarget(req.params.id);
+    const target = await targetService.getTarget(String(req.params.id));
     if (!target) throw new AppError(404, 'Target not found');
     res.json(target);
   } catch (err) {

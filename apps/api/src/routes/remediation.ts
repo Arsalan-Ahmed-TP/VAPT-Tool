@@ -28,7 +28,7 @@ const applySchema = z.object({
 // List proposals for a scan
 router.get('/proposals/:scanId', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const proposals = await remediationService.getProposals(req.params.scanId);
+    const proposals = await remediationService.getProposals(String(req.params.scanId));
     res.json({ data: proposals });
   } catch (err) {
     next(err);
@@ -38,7 +38,7 @@ router.get('/proposals/:scanId', async (req: Request, res: Response, next: NextF
 // Get single proposal
 router.get('/proposals/detail/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const proposal = await remediationService.getProposal(req.params.id);
+    const proposal = await remediationService.getProposal(String(req.params.id));
     if (!proposal) throw new AppError(404, 'Proposal not found');
     res.json(proposal);
   } catch (err) {
@@ -79,7 +79,7 @@ router.post('/apply', async (req: Request, res: Response, next: NextFunction) =>
 // Export patch
 router.get('/patch/:scanId', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const patch = await remediationService.exportPatch(req.params.scanId);
+    const patch = await remediationService.exportPatch(String(req.params.scanId));
     res.json(patch);
   } catch (err) {
     next(err);

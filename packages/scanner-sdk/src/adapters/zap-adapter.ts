@@ -77,9 +77,6 @@ export class ZapAdapter extends BaseScannerAdapter {
     const outputPath = join(input.artifact_output_dir, 'zap-results.json');
     const targetUrl = input.target_url || '';
 
-    // Choose scan type based on profile
-    const scanType = input.profile === ScanProfile.Aggressive ? 'full-scan' : 'baseline';
-
     const args = [
       `-cmd`,
       `-quickurl`, targetUrl,
@@ -110,7 +107,7 @@ export class ZapAdapter extends BaseScannerAdapter {
     return code === 0 || code === 1 || code === 2;
   }
 
-  async parseResults(rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
+  async parseResults(_rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
     const findings: NormalizedFinding[] = [];
     const jsonPath = join(input.artifact_output_dir, 'zap-results.json');
     let raw: ZapReport;

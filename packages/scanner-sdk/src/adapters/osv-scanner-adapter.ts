@@ -90,7 +90,7 @@ export class OsvScannerAdapter extends BaseScannerAdapter {
     return code === 0 || code === 1;
   }
 
-  async parseResults(rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
+  async parseResults(_rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
     const findings: NormalizedFinding[] = [];
     const jsonPath = join(input.artifact_output_dir, 'osv-results.json');
     let raw: OsvResult;
@@ -110,7 +110,6 @@ export class OsvScannerAdapter extends BaseScannerAdapter {
           const severity = this.extractSeverity(vuln);
           const fixVersion = this.extractFixVersion(vuln, pkg.package.name);
           const cvss = this.extractCvss(vuln);
-          const cve = vuln.aliases?.find((a) => a.startsWith('CVE-'));
 
           findings.push({
             finding_id: this.generateFindingId(),

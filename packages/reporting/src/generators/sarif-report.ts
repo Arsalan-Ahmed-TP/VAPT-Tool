@@ -2,7 +2,6 @@
 // SARIF 2.1.0 report generator — for IDE and CI/CD integration
 // ---------------------------------------------------------------------------
 
-import { Severity } from '@securescope/shared-types';
 import type { ReportInput } from '../report-engine.js';
 
 function severityToSarifLevel(severity: string): string {

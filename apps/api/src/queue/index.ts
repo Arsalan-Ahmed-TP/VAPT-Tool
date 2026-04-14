@@ -3,11 +3,11 @@
 // ---------------------------------------------------------------------------
 
 import { Queue } from 'bullmq';
-import IORedis from 'ioredis';
+import { Redis } from 'ioredis';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
 
-export const redisConnection = new IORedis({
+export const redisConnection = new Redis({
   host: config.redis.host,
   port: config.redis.port,
   password: config.redis.password,
@@ -15,7 +15,7 @@ export const redisConnection = new IORedis({
   enableReadyCheck: false,
 });
 
-redisConnection.on('error', (err) => {
+redisConnection.on('error', (err: Error) => {
   logger.error('Redis connection error', { error: err.message });
 });
 

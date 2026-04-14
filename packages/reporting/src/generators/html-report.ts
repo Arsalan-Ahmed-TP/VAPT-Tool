@@ -2,7 +2,6 @@
 // HTML report generator — self-contained single-file report
 // ---------------------------------------------------------------------------
 
-import { Severity } from '@securescope/shared-types';
 import type { ReportInput } from '../report-engine.js';
 
 function severityColor(severity: string): string {

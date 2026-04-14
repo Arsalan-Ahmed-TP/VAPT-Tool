@@ -7,8 +7,8 @@ import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
-import simpleGit from 'simple-git';
-import IORedis from 'ioredis';
+import { simpleGit } from 'simple-git';
+import { Redis } from 'ioredis';
 import { config } from '../config.js';
 import { db, scanRequests, scannerJobs, scanTargets, normalizedFindings, correlatedGroups } from '../db.js';
 import { fingerprintTarget } from '../services/fingerprint-service.js';
@@ -358,7 +358,7 @@ async function phaseFinalize(ctx: PipelineContext): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export function createScanPipelineWorker() {
-  const connection = new IORedis({
+  const connection = new Redis({
     host: config.redis.host,
     port: config.redis.port,
     password: config.redis.password,

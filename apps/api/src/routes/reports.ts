@@ -45,7 +45,7 @@ router.get('/:scanId', async (req: Request, res: Response, next: NextFunction) =
   try {
     const reports = await db.select()
       .from(schema.reportArtifacts)
-      .where(eq(schema.reportArtifacts.scan_id, req.params.scanId));
+      .where(eq(schema.reportArtifacts.scan_id, String(req.params.scanId)));
     res.json({ data: reports });
   } catch (err) {
     next(err);
@@ -57,7 +57,7 @@ router.get('/download/:id', async (req: Request, res: Response, next: NextFuncti
   try {
     const [report] = await db.select()
       .from(schema.reportArtifacts)
-      .where(eq(schema.reportArtifacts.id, req.params.id));
+      .where(eq(schema.reportArtifacts.id, String(req.params.id)));
 
     if (!report) throw new AppError(404, 'Report not found');
 

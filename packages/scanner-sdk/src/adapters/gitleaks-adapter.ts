@@ -85,7 +85,7 @@ export class GitleaksAdapter extends BaseScannerAdapter {
     return code === 0 || code === 1;
   }
 
-  async parseResults(rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
+  async parseResults(_rawResult: ScannerRawResult, input: ScannerInput): Promise<NormalizedFinding[]> {
     const findings: NormalizedFinding[] = [];
     const jsonPath = join(input.artifact_output_dir, 'gitleaks-results.json');
     let raw: GitleaksFinding[];
@@ -102,7 +102,8 @@ export class GitleaksAdapter extends BaseScannerAdapter {
     for (const leak of raw) {
       // CRITICAL: Never expose the actual secret value
       const redactedMatch = this.redactSecret(leak.Match);
-      const redactedSecret = this.redactSecret(leak.Secret);
+      // Redact but don't store the secret value — only used for classification
+      this.redactSecret(leak.Secret);
 
       findings.push({
         finding_id: this.generateFindingId(),
