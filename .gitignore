@@ -1,0 +1,35 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+*.log
+*.tgz
+coverage/
+.nyc_output/
+.turbo/
+.next/
+.cache/
+tmp/
+*.sqlite
+*.db
+
+# Scanner artifacts (may contain sensitive data)
+scan-artifacts/
+raw-results/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-data/
+postgres-data/
+redis-data/

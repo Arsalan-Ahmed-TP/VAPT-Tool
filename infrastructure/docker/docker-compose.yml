@@ -1,0 +1,137 @@
+version: '3.9'
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL database
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: securescope-db
+    environment:
+      POSTGRES_DB: securescope
+      POSTGRES_USER: securescope
+      POSTGRES_PASSWORD: securescope
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U securescope"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - securescope
+
+  # ---------------------------------------------------------------------------
+  # Redis for BullMQ job queue
+  # ---------------------------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: securescope-redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - securescope
+
+  # ---------------------------------------------------------------------------
+  # API server
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.api
+    container_name: securescope-api
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: securescope
+      DB_USER: securescope
+      DB_PASSWORD: securescope
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CORS_ORIGINS: http://localhost:3000
+      CREDENTIAL_ENCRYPTION_KEY: change-me-in-production-32char!
+      SCANNER_ARTIFACT_DIR: /app/scan-artifacts
+      SCANNER_WORK_DIR: /app/scanner-workdir
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - scan-artifacts:/app/scan-artifacts
+      - scanner-workdir:/app/scanner-workdir
+    networks:
+      - securescope
+
+  # ---------------------------------------------------------------------------
+  # Worker service
+  # ---------------------------------------------------------------------------
+  worker:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.worker
+    container_name: securescope-worker
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: securescope
+      DB_USER: securescope
+      DB_PASSWORD: securescope
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CREDENTIAL_ENCRYPTION_KEY: change-me-in-production-32char!
+      SCANNER_ARTIFACT_DIR: /app/scan-artifacts
+      SCANNER_WORK_DIR: /app/scanner-workdir
+      SCANNER_CONCURRENCY: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - scan-artifacts:/app/scan-artifacts
+      - scanner-workdir:/app/scanner-workdir
+    networks:
+      - securescope
+
+  # ---------------------------------------------------------------------------
+  # Frontend (development server)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.web
+    container_name: securescope-web
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_API_URL: http://localhost:4000
+    depends_on:
+      - api
+    networks:
+      - securescope
+
+volumes:
+  postgres-data:
+  redis-data:
+  scan-artifacts:
+  scanner-workdir:
+
+networks:
+  securescope:
+    driver: bridge

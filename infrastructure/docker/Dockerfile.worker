@@ -1,0 +1,53 @@
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+COPY tsconfig.base.json ./
+
+COPY packages/shared-types/package.json packages/shared-types/
+COPY packages/scanner-sdk/package.json packages/scanner-sdk/
+COPY apps/worker/package.json apps/worker/
+
+RUN npm install --workspace=packages/shared-types --workspace=packages/scanner-sdk --workspace=apps/worker
+
+COPY packages/shared-types/ packages/shared-types/
+COPY packages/scanner-sdk/ packages/scanner-sdk/
+COPY apps/worker/ apps/worker/
+
+RUN npm run build --workspace=packages/shared-types
+RUN npm run build --workspace=packages/scanner-sdk
+RUN npm run build --workspace=apps/worker
+
+# ---------------------------------------------------------------------------
+# Production stage — includes scanner tools
+# ---------------------------------------------------------------------------
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install system dependencies for scanners
+RUN apk add --no-cache \
+    git \
+    python3 \
+    py3-pip \
+    curl \
+    bash \
+    && rm -rf /var/cache/apk/*
+
+# Note: In production, scanner binaries (semgrep, gitleaks, trivy, osv-scanner, zap)
+# would be installed here or mounted as sidecar containers.
+# For development, the worker gracefully handles missing scanners.
+
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/shared-types/dist ./packages/shared-types/dist
+COPY --from=builder /app/packages/shared-types/package.json ./packages/shared-types/
+COPY --from=builder /app/packages/scanner-sdk/dist ./packages/scanner-sdk/dist
+COPY --from=builder /app/packages/scanner-sdk/package.json ./packages/scanner-sdk/
+COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
+COPY --from=builder /app/apps/worker/package.json ./apps/worker/
+COPY --from=builder /app/package.json ./
+
+RUN mkdir -p /app/scan-artifacts /app/scanner-workdir
+
+CMD ["node", "apps/worker/dist/index.js"]
