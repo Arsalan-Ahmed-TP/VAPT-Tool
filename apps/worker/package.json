@@ -13,6 +13,7 @@
   "dependencies": {
     "@securescope/shared-types": "*",
     "@securescope/scanner-sdk": "*",
+    "@securescope/reporting": "*",
     "bullmq": "^5.20.0",
     "ioredis": "^5.4.0",
     "pg": "^8.13.0",
